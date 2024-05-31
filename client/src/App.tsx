@@ -30,24 +30,33 @@ function App() {
     if (start && destination) {
       setLoading(true);
       setDistance(null);
-      // Get the distance between the two points
-      //TODO: Replace with an API call to get the distance
-      const startLocation = new google.maps.LatLng(
-        start.geometry?.location?.lat() || 0,
-        start.geometry?.location?.lng() || 0
-      );
-      const destinationLocation = new google.maps.LatLng(
-        destination.geometry?.location?.lat() || 0,
-        destination.geometry?.location?.lng() || 0
-      );
-      const distance = google.maps.geometry.spherical.computeDistanceBetween(
-        startLocation,
-        destinationLocation
-      );
-      setTimeout(() => {
-        setDistance(distance / 1000);
-        setLoading(false);
-      }, 3000);
+
+      // Make API call here
+      const addresses = {
+        addr1: start.formatted_address,
+        addr2: destination.formatted_address,
+      };
+
+      // Define the URL of your Rails API endpoint
+      const url = "/api/distcalc";
+
+      // Make the POST request
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ addresses }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setDistance(data.dist);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          setLoading(false);
+        });
     }
   };
 
@@ -78,7 +87,7 @@ function App() {
               {distance && (
                 <div className="p-2 m-2 bg-white rounded">
                   <h4>Distance</h4>
-                  <p>{distance.toFixed(2)} km</p>
+                  <p>{distance}</p>
                 </div>
               )}
               {Loading && (
