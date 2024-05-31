@@ -9,7 +9,6 @@ import {
 } from "@vis.gl/react-google-maps";
 import MapHandler from "./MapHandler";
 import PlaceAutocomplete from "./PlaceAutocomplete";
-import Directions from "./Directions";
 import { Button, Spinner } from "react-bootstrap";
 
 const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "";
@@ -91,10 +90,8 @@ function App() {
               )}
             </div>
           </MapControl>
-
           <MapHandler start={start} destination={destination} />
         </Map>
-        <Directions start={start} destination={destination} />
       </APIProvider>
     </div>
   );
