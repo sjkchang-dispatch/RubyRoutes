@@ -1,0 +1,2 @@
+class Distcalc < ApplicationRecord
+end
