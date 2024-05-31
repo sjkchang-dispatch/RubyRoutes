@@ -5,25 +5,27 @@ class Api::V1::DistcalcsController < ApplicationController
   before_action :set_distcalc, only: %i[ show update destroy ]
 
   def calculate_dist
-    #handle POST requests taking 2 addresses
-    #use "params"? require it?
-    #addresses = params.require(:addresses)
-
     #calculate distance between two locations using google map api
 
-    #test addresses
-    address1 = "11 W 53rd St, New York, NY 10019"
-    address2 = "1900 Anacostia Dr, Washington, DC 20020"
+    #TODO: validate using validate_value?
+    #handle POST requests taking 2 addresses
+    addresses = params.require(:addresses).permit(:addr1, :addr2)
+
+    address1 = params[:addresses][:addr1]
+    address2 = params[:addresses][:addr2]
 
     response = HTTParty.get("https://maps.googleapis.com/maps/api/distancematrix/json?destinations=#{address1}&origins=#{address2}&units=imperial&key=#{ENV['GOOGLE_API_KEY']}", format: :plain)
 
     obj = JSON.parse(response)
 
-    #TODO: begin-rescue block to catch if address isnt found?
-    distance = obj['rows'][0]['elements'][0]['distance']['text']
+    begin
+      distance = obj['rows'][0]['elements'][0]['distance']['text']
+    rescue
+      distance = "error: could not calculate distance (invalid address?)"
+    end
 
     #return result as json
-    render json: {data: distance}
+    render json: {dist: distance}
   end
 
   # GET /distcalcs
